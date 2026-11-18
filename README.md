@@ -13,3 +13,5 @@ Conteúdo:
 - Pedidos especiais para lojas e parceiros
 
 Catálogo responsivo para web e mobile.
+
+Última publicação: catálogo oficial ALURA.
