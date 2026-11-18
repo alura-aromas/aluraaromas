@@ -17,12 +17,23 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:11px 7px;
 .mobile-nav{display:none}.modal{display:none;position:fixed;inset:0;z-index:99;background:rgba(45,33,24,.48);padding:18px;align-items:center;justify-content:center}.modal.open{display:flex}.modalbox{width:min(620px,100%);max-height:90vh;overflow:auto;background:#f7eddc;border:1px solid var(--line);border-radius:22px;padding:22px;position:relative;box-shadow:0 26px 80px rgba(45,33,24,.28)}.x{position:absolute;right:14px;top:10px;border:0;background:transparent;font-size:28px;color:var(--muted);cursor:pointer}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{display:grid;gap:5px}.field.full{grid-column:1/-1}.field label{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);background:#fff7eb;border-radius:12px;padding:11px;color:var(--ink)}.field textarea{min-height:110px;resize:vertical}.modalactions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}.stockrow,.cashrow{display:grid;grid-template-columns:1.4fr .6fr .6fr .7fr auto;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}.stockrow:last-child,.cashrow:last-child{border-bottom:0}.qtyBtns{display:flex;gap:5px}.qtyBtns button{width:31px;height:31px;border-radius:50%;border:1px solid var(--line);background:#ead9c2;cursor:pointer;font-weight:900}
 @media(max-width:900px){.mobile-nav{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:8px;right:8px;bottom:8px;z-index:50;padding:7px;background:#f7eddc;border:1px solid var(--line);border-radius:18px;box-shadow:0 15px 45px rgba(60,42,28,.18)}.mobile-nav button{border:0;background:transparent;padding:10px 3px;border-radius:12px;font-size:10px;font-weight:800;color:var(--muted)}.mobile-nav button.active{background:rgba(100,104,76,.14);color:#353a27}.content{padding-bottom:92px!important}}
 @media(max-width:560px){.formgrid{grid-template-columns:1fr}.field.full{grid-column:auto}.stockrow,.cashrow{grid-template-columns:1fr auto}.stockrow>*:nth-child(2),.stockrow>*:nth-child(3),.cashrow>*:nth-child(2),.cashrow>*:nth-child(3){display:none}.modal{padding:10px}.modalbox{padding:20px 15px 16px}}
+
+.emailbox{margin-top:14px;border-top:1px dashed var(--line);padding-top:14px}
+.emailhead{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px}
+.emailhead b{font-family:Georgia,serif}
+.emailcopy{white-space:pre-wrap;background:#fff7eb;border:1px solid var(--line);border-radius:14px;padding:13px;font-size:12.5px;line-height:1.62;color:#4e4034}
+.leadfacts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}
+.fact{background:#f2e1ca;border:1px solid var(--line);border-radius:12px;padding:9px}
+.fact small{display:block;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-size:9px;font-weight:800;margin-bottom:4px}
+.fact b{font-size:12px}
+.copyok{background:#dbe4d2!important;color:#3d513a!important}
+@media(max-width:700px){.leadfacts{grid-template-columns:1fr 1fr}.emailhead{align-items:flex-start;flex-direction:column}.emailhead .btn{width:100%}}
 </style></head><body><div class="app"><aside><div class="brand">ALURA<small>GESTÃO & CRM</small></div><nav>
 <button class="active" data-page="dash">Visão geral</button><button data-page="crm">CRM</button><button data-page="email">E-mails</button><button data-page="estoque">Estoque</button><button data-page="vendas">Vendas & caixa</button><button data-page="social">Instagram & WhatsApp</button></nav></aside>
 <main><div class="top"><b>ALURA Gestão</b><span>Protótipo funcional · dados locais</span></div><div class="content">
 <section id="dash" class="page active"><h1>Visão geral</h1><div class="sub">Um painel simples para tocar a Alura sem virar refém de planilha.</div><div class="grid4"><div class="card"><div class="label">Leads</div><div class="value" id="mLeads">50</div></div><div class="card"><div class="label">Em contato</div><div class="value" id="mContact">0</div></div><div class="card"><div class="label">Clientes</div><div class="value" id="mClients">0</div></div><div class="card"><div class="label">Estoque crítico</div><div class="value">3</div></div></div><div class="panel"><div class="notice">Os dados comerciais editados neste painel ficam salvos no navegador deste aparelho via localStorage. Nada de caixa/pipeline é gravado publicamente no GitHub.</div><div class="notice">Instagram e WhatsApp estão apenas com a área preparada. A conexão real entra depois via Meta Business.</div></div></section>
 
-<section id="crm" class="page"><h1>CRM</h1><div class="sub">50 leads iniciais · priorização local para Belo Horizonte.</div>
+<section id="crm" class="page"><h1>CRM Outbound</h1><div class="sub">Cada lead já vem com contexto comercial e e-mail personalizado pronto para copiar e colar.</div>
 <div class="toolbar"><input id="search" placeholder="Buscar negócio, bairro, nicho ou e-mail"><select id="priority"><option value="">Todas as prioridades</option><option>A</option><option>B</option><option>C</option></select><select id="neigh"><option value="">Todos os bairros</option></select><button class="btn primary" onclick="openLeadForm()">+ Novo lead</button></div><div id="leadList" class="leads"></div></section>
 
 <section id="email" class="page"><h1>E-mails</h1><div class="sub">Modelos prontos para abrir no Gmail e personalizar antes do envio.</div><div class="split"><div>
@@ -53,16 +64,48 @@ const save=()=>{localStorage.setItem("aluraLeads",JSON.stringify(leads));localSt
 const modal=document.getElementById("modal"),mc=document.getElementById("modalContent");
 function openModal(x){mc.innerHTML=x;modal.classList.add("open")} function closeModal(){modal.classList.remove("open");mc.innerHTML=""} window.closeModal=closeModal;
 function maps(l){return "https://www.google.com/maps/search/?api=1&query="+encodeURIComponent((l.address||l.name+", "+l.neighborhood)+", Belo Horizonte MG")}
-function gmail(l){
- const subject="Uma ideia da Alura para o seu espaço";
- const body=("Olá, tudo bem?\n\nConheci o trabalho da "+l.name+" e acredito que a Alura pode fazer sentido para o espaço de vocês.\n\nTrabalhamos com velas e aromas artesanais com uma proposta de cuidado, presença e experiência. Podemos montar pedidos para ambientação, presentes para clientes ou revenda.\n\nCatálogo: https://alura-aromas.github.io/aluraaromas/\n\nSe quiser, posso te apresentar algumas opções e entender o que faria mais sentido para vocês.\n\nAbraço,\nJenifer\nALURA — Velas & Aromas Artesanais");
- return "https://mail.google.com/mail/?view=cm&fs=1&to="+encodeURIComponent(l.email)+"&su="+encodeURIComponent(subject)+"&body="+encodeURIComponent(body)
+function emailForLead(l){
+ const seg=(l.segment||"").toLowerCase();
+ let angle="experiência e cuidado no atendimento";
+ let para1="Vi que vocês atuam com "+l.segment.toLowerCase()+" em "+l.neighborhood+", e achei que existe uma conexão natural com a proposta da Alura.";
+ let para2="A gente cria velas e aromas artesanais para transformar o ambiente e prolongar a sensação de cuidado que a cliente já vive no atendimento.";
+ let offer="Podemos montar uma proposta simples para ambientação do espaço, presentes para clientes ou pedidos em quantidade.";
+ if(seg.includes("massag")||seg.includes("wellness")||seg.includes("bem-estar")){
+   angle="ambientação e experiência sensorial";
+   para1="Vi que a "+l.name+" trabalha com "+l.segment.toLowerCase()+" em "+l.neighborhood+". Nesse tipo de atendimento, o ambiente também faz parte da experiência.";
+   para2="A Alura cria velas e aromas artesanais que ajudam a construir uma atmosfera de pausa, conforto e presença — algo que pode complementar o momento que vocês já entregam às clientes.";
+   offer="Dá para pensar tanto em ambientação quanto em kits e lembranças para clientes.";
+ } else if(seg.includes("salão")||seg.includes("cabelo")||seg.includes("esmalteria")||seg.includes("beleza")){
+   angle="fidelização e presente para clientes";
+   para1="Conheci a "+l.name+", em "+l.neighborhood+", e gostei da conexão com o universo de beleza e autocuidado.";
+   para2="Na Alura, a gente trabalha com velas e aromas artesanais que podem virar um detalhe de experiência no espaço ou um presente para clientes em ações de fidelização e datas especiais.";
+   offer="Também conseguimos montar pedidos em quantidade ou formatos pensados para revenda.";
+ } else if(seg.includes("estética")){
+   angle="experiência no espaço e relacionamento";
+   para1="Conheci a "+l.name+", que atua com "+l.segment.toLowerCase()+" em "+l.neighborhood+", e achei que a proposta de vocês conversa bastante com a Alura.";
+   para2="Criamos velas e aromas artesanais pensados para trazer sensação de cuidado, presença e acolhimento ao ambiente — algo que pode somar à experiência que a cliente já tem no atendimento.";
+   offer="Podemos montar opções para ambientação, presente pós-atendimento, kits ou pedidos em quantidade.";
+ }
+ const subject="Uma ideia da Alura para a "+l.name;
+ const body="Olá, tudo bem?\n\n"+para1+"\n\n"+para2+"\n\n"+offer+"\n\nNosso catálogo: https://alura-aromas.github.io/aluraaromas/\n\nSe fizer sentido, posso te mostrar algumas opções de forma bem prática.\n\nAbraço,\nJenifer\nALURA — Velas & Aromas Artesanais";
+ return {subject,body,angle};
 }
+function gmail(l){const e=emailForLead(l);return "https://mail.google.com/mail/?view=cm&fs=1&to="+encodeURIComponent(l.email)+"&su="+encodeURIComponent(e.subject)+"&body="+encodeURIComponent(e.body)}
+function copyEmail(id,btn){const l=leads.find(x=>x.id===id),e=emailForLead(l);const full="Para: "+l.email+"\nAssunto: "+e.subject+"\n\n"+e.body;navigator.clipboard.writeText(full).then(()=>{const t=btn.textContent;btn.textContent="Copiado ✓";btn.classList.add("copyok");setTimeout(()=>{btn.textContent=t;btn.classList.remove("copyok")},1600)}).catch(()=>prompt("Copie o e-mail:",full))}
+window.copyEmail=copyEmail;
 function renderLeads(){
  const q=(document.getElementById("search")?.value||"").toLowerCase(),p=document.getElementById("priority")?.value||"",n=document.getElementById("neigh")?.value||"";
  const arr=leads.filter(l=>(!q||(l.name+" "+l.neighborhood+" "+l.segment+" "+l.email).toLowerCase().includes(q))&&(!p||l.priority===p)&&(!n||l.neighborhood===n));
  const el=document.getElementById("leadList"); if(!el)return;
- el.innerHTML=arr.map(l=>'<div class="lead"><div class="leadtop"><div><h3>'+l.name+'</h3><div class="meta">'+l.segment+' · '+l.neighborhood+', Belo Horizonte<br>'+l.email+(l.website?'<br><a href="'+l.website+'" target="_blank">Site</a>':'')+(l.address?'<br>'+l.address:'')+'</div></div><span class="badge '+l.priority+'">Prioridade '+l.priority+'</span></div><div class="actions"><select class="stage" onchange="setStage('+l.id+',this.value)">'+stages.map(s=>'<option '+(s===l.stage?'selected':'')+'>'+s+'</option>').join("")+'</select><button class="btn soft" onclick="editLead('+l.id+')">Editar</button><a class="btn soft" target="_blank" href="'+maps(l)+'">Maps</a>'+(l.website?'<a class="btn soft" target="_blank" href="'+l.website+'">Site</a>':'')+'<a class="btn primary" target="_blank" href="'+gmail(l)+'">Gmail</a></div></div>').join("");
+ el.innerHTML=arr.map(l=>{
+   const e=emailForLead(l);
+   return '<div class="lead">'+
+   '<div class="leadtop"><div><h3>'+l.name+'</h3><div class="meta">'+l.segment+' · '+l.neighborhood+', Belo Horizonte</div></div><span class="badge '+l.priority+'">Prioridade '+l.priority+'</span></div>'+
+   '<div class="leadfacts"><div class="fact"><small>E-mail</small><b>'+esc(l.email)+'</b></div><div class="fact"><small>Setor</small><b>'+esc(l.segment)+'</b></div><div class="fact"><small>Localidade</small><b>'+esc(l.neighborhood)+'</b></div><div class="fact"><small>Ângulo OTB</small><b>'+esc(e.angle)+'</b></div></div>'+
+   (l.website||l.address?'<div class="meta" style="margin-top:9px">'+(l.website?'Site: <a href="'+l.website+'" target="_blank">'+esc(l.website)+'</a>':'')+(l.address?'<br>Endereço: '+esc(l.address):'')+'</div>':'')+
+   '<div class="emailbox"><div class="emailhead"><b>E-mail personalizado</b><button class="btn primary" onclick="copyEmail('+l.id+',this)">Copiar e-mail</button></div><div class="emailcopy"><b>Para:</b> '+esc(l.email)+'\n<b>Assunto:</b> '+esc(e.subject)+'\n\n'+esc(e.body)+'</div></div>'+
+   '<div class="actions"><select class="stage" onchange="setStage('+l.id+',this.value)">'+stages.map(s=>'<option '+(s===l.stage?'selected':'')+'>'+s+'</option>').join("")+'</select><button class="btn soft" onclick="editLead('+l.id+')">Editar</button><a class="btn soft" target="_blank" href="'+maps(l)+'">Maps</a>'+(l.website?'<a class="btn soft" target="_blank" href="'+l.website+'">Site</a>':'')+'<a class="btn soft" target="_blank" href="'+gmail(l)+'">Abrir no Gmail</a></div></div>';
+ }).join("");
 }
 window.setStage=(id,v)=>{leads.find(x=>x.id===id).stage=v;save()};
 window.openLeadForm=()=>openModal('<h2>Novo lead</h2><div class="formgrid"><div class="field full"><label>Negócio</label><input id="lfName"></div><div class="field"><label>Bairro</label><input id="lfNeigh"></div><div class="field"><label>Nicho</label><input id="lfSeg"></div><div class="field"><label>E-mail</label><input id="lfEmail" type="email"></div><div class="field"><label>Prioridade</label><select id="lfPri"><option>A</option><option>B</option><option>C</option></select></div><div class="field full"><label>Site</label><input id="lfSite"></div><div class="field full"><label>Endereço</label><input id="lfAddr"></div></div><div class="modalactions"><button class="btn soft" onclick="closeModal()">Cancelar</button><button class="btn primary" onclick="saveLead()">Salvar lead</button></div>');
