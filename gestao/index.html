@@ -128,6 +128,25 @@ function copyEmail(id,btn){const l=leads.find(x=>x.id===id),e=emailForLead(l);co
 window.copyEmail=copyEmail;
 
 function setSync(t){const e=document.getElementById("syncLabel");if(e)e.textContent=t}
+function errorText(e){
+  if(!e)return "Erro desconhecido";
+  if(typeof e==="string")return e;
+  const parts=[e.message,e.code,e.details,e.hint,e.statusText].filter(Boolean);
+  if(parts.length)return parts.join(" | ");
+  try{return JSON.stringify(e)}catch(_){return String(e)}
+}
+async function checkTable(name){
+  const r=await sb.from(name).select("*").limit(1);
+  if(r.error)throw new Error(name+" → "+errorText(r.error));
+  return true;
+}
+async function runHealthCheck(){
+  const auth=await sb.auth.getUser();
+  if(auth.error)throw new Error("Auth → "+errorText(auth.error));
+  if(!auth.data?.user)throw new Error("Auth → sessão não encontrada");
+  for(const t of ["leads","products","cash_movements","sales"]){await checkTable(t)}
+  return true;
+}
 function setBusy(on){document.querySelector(".app")?.classList.toggle("loading",on)}
 
 async function signIn(){
@@ -175,7 +194,24 @@ async function loadAll(){
 
 async function startApp(){
  document.getElementById("authGate").classList.add("hidden");
- try{await seedIfEmpty();await loadAll()}catch(e){console.error(e);setSync("Erro de sincronização");alert("Falha ao carregar dados do Supabase: "+e.message)}
+ try{
+   setSync("Supabase · verificando…");
+   await runHealthCheck();
+   await seedIfEmpty();
+   await loadAll();
+ }catch(e){
+   console.error("ALURA/Supabase",e);
+   setBusy(false);
+   setSync("Erro de sincronização");
+   const msg=errorText(e);
+   openModal(
+     '<h2>Diagnóstico do Supabase</h2>'+
+     '<div class="notice"><b>O login funcionou</b>, mas o painel não conseguiu completar a leitura/gravação do banco.</div>'+
+     '<div class="field full"><label>Erro técnico</label><textarea readonly style="min-height:120px">'+esc(msg)+'</textarea></div>'+
+     '<p class="meta">Copie este erro se precisar me enviar. Ele identifica a tabela, policy ou permissão que está falhando.</p>'+
+     '<div class="modalactions"><button class="btn soft" onclick="location.reload()">Recarregar</button></div>'
+   );
+ }
 }
 
 async function setStage(id,v){
