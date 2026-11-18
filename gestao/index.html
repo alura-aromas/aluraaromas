@@ -15,7 +15,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:11px 7px;
 @media(max-width:560px){.grid4{grid-template-columns:1fr}.leadtop{flex-direction:column}.top{padding:14px 16px}.content{padding:16px}.toolbar input,.toolbar select{width:100%}}
 
 .mobile-nav{display:none}.modal{display:none;position:fixed;inset:0;z-index:99;background:rgba(45,33,24,.48);padding:18px;align-items:center;justify-content:center}.modal.open{display:flex}.modalbox{width:min(620px,100%);max-height:90vh;overflow:auto;background:#f7eddc;border:1px solid var(--line);border-radius:22px;padding:22px;position:relative;box-shadow:0 26px 80px rgba(45,33,24,.28)}.x{position:absolute;right:14px;top:10px;border:0;background:transparent;font-size:28px;color:var(--muted);cursor:pointer}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{display:grid;gap:5px}.field.full{grid-column:1/-1}.field label{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);background:#fff7eb;border-radius:12px;padding:11px;color:var(--ink)}.field textarea{min-height:110px;resize:vertical}.modalactions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}.stockrow,.cashrow{display:grid;grid-template-columns:1.4fr .6fr .6fr .7fr auto;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}.stockrow:last-child,.cashrow:last-child{border-bottom:0}.qtyBtns{display:flex;gap:5px}.qtyBtns button{width:31px;height:31px;border-radius:50%;border:1px solid var(--line);background:#ead9c2;cursor:pointer;font-weight:900}
-@media(max-width:900px){.mobile-nav{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:8px;right:8px;bottom:8px;z-index:50;padding:7px;background:#f7eddc;border:1px solid var(--line);border-radius:18px;box-shadow:0 15px 45px rgba(60,42,28,.18)}.mobile-nav button{border:0;background:transparent;padding:10px 3px;border-radius:12px;font-size:10px;font-weight:800;color:var(--muted)}.mobile-nav button.active{background:rgba(100,104,76,.14);color:#353a27}.content{padding-bottom:92px!important}}
+@media(max-width:900px){.mobile-nav{display:grid;grid-template-columns:repeat(6,1fr);position:fixed;left:8px;right:8px;bottom:8px;z-index:50;padding:7px;background:#f7eddc;border:1px solid var(--line);border-radius:18px;box-shadow:0 15px 45px rgba(60,42,28,.18)}.mobile-nav button{border:0;background:transparent;padding:10px 3px;border-radius:12px;font-size:10px;font-weight:800;color:var(--muted)}.mobile-nav button.active{background:rgba(100,104,76,.14);color:#353a27}.content{padding-bottom:92px!important}}
 @media(max-width:560px){.formgrid{grid-template-columns:1fr}.field.full{grid-column:auto}.stockrow,.cashrow{grid-template-columns:1fr auto}.stockrow>*:nth-child(2),.stockrow>*:nth-child(3),.cashrow>*:nth-child(2),.cashrow>*:nth-child(3){display:none}.modal{padding:10px}.modalbox{padding:20px 15px 16px}}
 
 .emailbox{margin-top:14px;border-top:1px dashed var(--line);padding-top:14px}
@@ -34,6 +34,17 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:11px 7px;
 .authbrand{font:700 28px Georgia,serif;letter-spacing:.09em;margin-bottom:24px}.authbrand small{display:block;font:700 9px Arial,sans-serif;color:var(--muted);letter-spacing:.16em;margin-top:4px}
 .authbox h2{margin:0 0 8px;font:700 30px Georgia,serif}.authbox p{color:var(--muted);font-size:13px;line-height:1.5}.authmsg{min-height:20px;margin-top:10px;font-size:12px;color:#8a4c3e}
 .loading{opacity:.55;pointer-events:none}
+
+.report-controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.report-controls select{border:1px solid var(--line);background:#f8eddd;border-radius:999px;padding:10px 12px;color:var(--ink)}
+.report-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.report-section{background:#f8eddd;border:1px solid var(--line);border-radius:16px;padding:15px}
+.report-row{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}
+.report-row:last-child{border-bottom:0}.report-row span{color:var(--muted)}
+.report-bar{height:8px;background:#ead9c2;border-radius:99px;overflow:hidden;margin-top:5px}
+.report-bar i{display:block;height:100%;background:var(--olive)}
+@media(max-width:760px){.report-grid{grid-template-columns:1fr}}
+@media print{aside,.top,.mobile-nav,.toolbar,.report-controls .btn{display:none!important}.app{display:block}.content{padding:0}.page{display:none!important}#relatorios{display:block!important}.panel,.card,.report-section{box-shadow:none;background:white}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head><body>
@@ -48,7 +59,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:11px 7px;
     <div id="authMsg" class="authmsg"></div>
   </div>
 </div><div class="app"><aside><div class="brand">ALURA<small>GESTÃO & CRM</small></div><nav>
-<button class="active" data-page="dash">Visão geral</button><button data-page="crm">CRM</button><button data-page="email">E-mails</button><button data-page="estoque">Estoque</button><button data-page="vendas">Vendas & caixa</button><button data-page="social">Instagram & WhatsApp</button></nav></aside>
+<button class="active" data-page="dash">Visão geral</button><button data-page="crm">CRM</button><button data-page="email">E-mails</button><button data-page="estoque">Estoque</button><button data-page="vendas">Vendas & caixa</button><button data-page="relatorios">Relatórios</button><button data-page="social">Instagram & WhatsApp</button></nav></aside>
 <main><div class="top"><b>ALURA Gestão</b><div style="display:flex;align-items:center;gap:10px"><span id="syncLabel">Supabase · conectando…</span><button class="btn soft" onclick="signOut()">Sair</button></div></div><div class="content">
 <section id="dash" class="page active"><h1>Visão geral</h1><div class="sub">Um painel simples para tocar a Alura sem virar refém de planilha.</div><div class="grid4"><div class="card"><div class="label">Leads</div><div class="value" id="mLeads">50</div></div><div class="card"><div class="label">Em contato</div><div class="value" id="mContact">0</div></div><div class="card"><div class="label">Clientes</div><div class="value" id="mClients">0</div></div><div class="card"><div class="label">Estoque crítico</div><div class="value">3</div></div></div><div class="panel"><div class="notice">Quando o Supabase está conectado, os dados ficam sincronizados entre aparelhos. Se houver falha, o CRM abre automaticamente em modo local para não interromper a operação.</div><div class="notice">Instagram e WhatsApp estão apenas com a área preparada. A conexão real entra depois via Meta Business.</div></div></section>
 
@@ -69,8 +80,32 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:11px 7px;
 <div class="grid4"><div class="card"><div class="label">Faturamento</div><div class="value" id="revTotal">R$ 0,00</div></div><div class="card"><div class="label">Entradas</div><div class="value" id="cashIn">R$ 0,00</div></div><div class="card"><div class="label">Saídas</div><div class="value" id="cashOut">R$ 0,00</div></div><div class="card"><div class="label">Saldo</div><div class="value" id="cashBalance">R$ 0,00</div></div></div>
 <div class="panel"><h3>Movimentações</h3><div id="cashList"></div></div></section>
 
+
+<section id="relatorios" class="page"><h1>Relatórios</h1><div class="sub">Resumo gerencial calculado diretamente dos dados do Supabase.</div>
+<div class="report-controls">
+<select id="reportType"><option value="month">Mensal</option><option value="quarter">Trimestral</option></select>
+<select id="reportPeriod"></select>
+<button class="btn soft" onclick="window.print()">Imprimir / salvar PDF</button>
+</div>
+<div class="grid4">
+<div class="card"><div class="label">Faturamento</div><div class="value" id="rRevenue">R$ 0,00</div></div>
+<div class="card"><div class="label">Vendas</div><div class="value" id="rSales">0</div></div>
+<div class="card"><div class="label">Novos leads</div><div class="value" id="rLeads">0</div></div>
+<div class="card"><div class="label">Saldo do período</div><div class="value" id="rBalance">R$ 0,00</div></div>
+</div>
+<div class="report-grid">
+<div class="panel"><h3>Financeiro</h3><div id="reportFinance"></div></div>
+<div class="panel"><h3>CRM</h3><div id="reportCRM"></div></div>
+</div>
+<div class="report-grid">
+<div class="panel"><h3>Vendas por canal</h3><div id="reportChannels"></div></div>
+<div class="panel"><h3>Estoque atual</h3><div id="reportStock"></div></div>
+</div>
+<div class="notice" style="margin-top:14px">O relatório resume os registros existentes sem duplicar dados no banco. Para conversão histórica exata por etapa, podemos adicionar histórico de mudanças do pipeline numa próxima versão.</div>
+</section>
+
 <section id="social" class="page"><h1>Instagram & WhatsApp</h1><div class="sub">Central preparada para a integração via Meta Business.</div><div class="split"><div class="panel" style="margin-top:0"><h3>Instagram</h3><p class="meta">DMs, comentários, leads vindos de stories e origem da venda.</p><button class="btn soft" disabled>Integração pendente</button></div><div class="panel" style="margin-top:0"><h3>WhatsApp Business</h3><p class="meta">Conversas, etiquetas, pedidos e atendimento.</p><button class="btn soft" disabled>Integração pendente</button></div></div></section>
-</div></main></div><div class="mobile-nav"><button class="active" data-page="dash">Início</button><button data-page="crm">CRM</button><button data-page="email">E-mails</button><button data-page="estoque">Estoque</button><button data-page="vendas">Caixa</button></div>
+</div></main></div><div class="mobile-nav"><button class="active" data-page="dash">Início</button><button data-page="crm">CRM</button><button data-page="estoque">Estoque</button><button data-page="vendas">Caixa</button><button data-page="relatorios">Relatórios</button><button data-page="email">E-mails</button></div>
 <div id="modal" class="modal" onclick="if(event.target===this)closeModal()"><div class="modalbox"><button class="x" onclick="closeModal()">×</button><div id="modalContent"></div></div></div><script>
 const seed=[{"id":1,"name":"Face Pampulha Estética Avançada","neighborhood":"Itapoã","segment":"Estética avançada","email":"botopremium.pampulha@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":2,"name":"Laser Care Estética","neighborhood":"Santa Amélia","segment":"Estética / massagens","email":"gabrielawerneck.biomed@gmail.com","priority":"A","website":"https://lasercareestetica.com.br/","address":"","stage":"Novo lead"},{"id":3,"name":"Bravi Estética Avançada","neighborhood":"Itapoã","segment":"Estética","email":"braviestetica@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":4,"name":"M V Saúde Estética e Bem-Estar","neighborhood":"Itapoã","segment":"Estética / bem-estar","email":"mv.clinica@outlook.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":5,"name":"Cristiane Alves Ribeiro","neighborhood":"Itapoã","segment":"Estética","email":"estudof@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":6,"name":"MBA Estética Avançada","neighborhood":"Pampulha","segment":"Estética","email":"micaellealvarenga@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":7,"name":"Tânia Mara Barbosa Studio","neighborhood":"Santa Amélia","segment":"Estética","email":"marabarbosa.studio@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":8,"name":"Be.Long","neighborhood":"Santa Amélia","segment":"Estética","email":"mairaferrarienf@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":9,"name":"Luiza Jardim","neighborhood":"Jaraguá","segment":"Estética avançada","email":"luizaesteticaavancada@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":10,"name":"Keola Estética","neighborhood":"Jaraguá","segment":"Estética / emagrecimento","email":"keola@keola.com.br","priority":"A","website":"https://keola.com.br/","address":"","stage":"Novo lead"},{"id":11,"name":"Suav Ouro Preto","neighborhood":"Ouro Preto","segment":"Beleza / estética","email":"suav.ouropreto@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":12,"name":"Rondinele Mendes Hair & Makeup","neighborhood":"Ouro Preto","segment":"Salão / maquiagem","email":"rondinelemendesrosahairmakeup@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":13,"name":"Leidedaiana Ferreira","neighborhood":"Castelo","segment":"Beleza / cabelo","email":"ladydayf@gmail.com","priority":"B","website":"","address":"","stage":"Novo lead"},{"id":14,"name":"Harmonizze Estética e Odontologia","neighborhood":"São Gabriel","segment":"Estética","email":"harmonizze.estetic@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":15,"name":"Aline Cristiane Passos","neighborhood":"São Gabriel","segment":"Estética / beleza","email":"dra.alininha@yahoo.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":16,"name":"Nicole Rodrigues Costa","neighborhood":"São Gabriel","segment":"Estética","email":"nicol3wx2006@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":17,"name":"Andressa Ramos de Jesus","neighborhood":"São Gabriel","segment":"Estética","email":"andressa_arj@hotmail.com.br","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":18,"name":"Jéssica Cristina Araújo","neighborhood":"São Gabriel","segment":"Estética","email":"esteticajessicaaraujo@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":19,"name":"Renara Ferreira de Sá","neighborhood":"São Gabriel","segment":"Estética / cabelo","email":"sarenara@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":20,"name":"Vânia Fernandes de Sá","neighborhood":"São Gabriel","segment":"Beleza","email":"vaniafernandessa@gmail.com","priority":"B","website":"","address":"","stage":"Novo lead"},{"id":21,"name":"Priscila S. Felisberto","neighborhood":"Cidade Nova","segment":"Estética","email":"priscilasestetica@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":22,"name":"CN Beleza","neighborhood":"Cidade Nova","segment":"Salão / estética","email":"alesantiago2019@icloud.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":23,"name":"Jaqueline Simão Cleres","neighborhood":"Cidade Nova","segment":"Cabelo / beleza","email":"jaqueline.cleres@yahoo.com.br","priority":"B","website":"","address":"","stage":"Novo lead"},{"id":24,"name":"Lode Hair","neighborhood":"Cidade Nova","segment":"Estética / cabelo","email":"contato@lodehair.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":25,"name":"Althea Health","neighborhood":"União","segment":"Estética / wellness","email":"usealtheahealth@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":26,"name":"Belíssima Estética","neighborhood":"União","segment":"Estética / sobrancelhas","email":"sobrancelhasbhadm@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":27,"name":"Juliana Alves Saúde Capilar & Pele","neighborhood":"União","segment":"Pele / cabelo","email":"juliaesalves@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":28,"name":"Instituto Vitta Beauty","neighborhood":"União","segment":"Estética avançada","email":"draluiizacardoso@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":29,"name":"Mara Tranças","neighborhood":"União","segment":"Beleza / cabelos","email":"maratrancas2024@gmail.com","priority":"B","website":"","address":"","stage":"Novo lead"},{"id":30,"name":"Leidiane Veloso","neighborhood":"União","segment":"Salão / beleza","email":"leidianeveloso88@gmail.com","priority":"B","website":"","address":"","stage":"Novo lead"},{"id":31,"name":"João Victor Santos Peres","neighborhood":"União","segment":"Beleza","email":"peresgold625@gmail.com","priority":"C","website":"","address":"","stage":"Novo lead"},{"id":32,"name":"Dra. Denise Sande Estética","neighborhood":"Dona Clara","segment":"Estética avançada","email":"sande.clinic@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":33,"name":"Carolina Jory Estética","neighborhood":"Dona Clara","segment":"Estética","email":"anacarolinajory@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":34,"name":"Isabella Ribeiro de Almeida","neighborhood":"Dona Clara","segment":"Estética","email":"isabellaribeiroalmeida@hotmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":35,"name":"Fernanda Biato","neighborhood":"Dona Clara","segment":"Beleza / estética","email":"biatofernanda06@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":36,"name":"Raissa Gabriela Hovanes","neighborhood":"Dona Clara","segment":"Beleza","email":"raissagabrielahovanes@gmail.com","priority":"B","website":"","address":"","stage":"Novo lead"},{"id":37,"name":"Selmira Lages","neighborhood":"Dona Clara","segment":"Beleza","email":"selmiralages@hotmail.com","priority":"B","website":"","address":"","stage":"Novo lead"},{"id":38,"name":"Maria de Jesus Ribeiro","neighborhood":"Dona Clara","segment":"Beleza","email":"geise180683@gmail.com","priority":"B","website":"","address":"","stage":"Novo lead"},{"id":39,"name":"Sinta-C","neighborhood":"Ipiranga","segment":"Estética integrada","email":"sintacestetica@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":40,"name":"Maria Neide Vieira","neighborhood":"Ipiranga","segment":"Estética / beleza","email":"marianeidevieira03@gmail.com","priority":"B","website":"","address":"","stage":"Novo lead"},{"id":41,"name":"Raze Beauty","neighborhood":"Ipiranga","segment":"Salão / estética","email":"taizdouglascamargo@yahoo.com.br","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":42,"name":"Denise de Paiva Ramos","neighborhood":"Ipiranga","segment":"Beleza / estética","email":"pretinhaefernando@hotmail.com","priority":"B","website":"","address":"","stage":"Novo lead"},{"id":43,"name":"Leida Aparecida da Silva","neighborhood":"Ipiranga","segment":"Estética / beleza","email":"leidasilva929@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":44,"name":"Neurinha Damazio","neighborhood":"Ipiranga","segment":"Beleza","email":"sarahdmazio@gmail.com","priority":"B","website":"","address":"","stage":"Novo lead"},{"id":45,"name":"Adriana Esmalteria BH","neighborhood":"Floresta","segment":"Esmalteria / estética","email":"adrianaesmalteriabh@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":46,"name":"Emanuelle Resende","neighborhood":"Sagrada Família","segment":"Beleza","email":"emanuellerpferreira03@gmail.com","priority":"B","website":"","address":"","stage":"Novo lead"},{"id":47,"name":"Maria Lúcia de Lima","neighborhood":"Centro","segment":"Estética","email":"luciaesteta.rosa@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":48,"name":"Centro de Estética Ana Duarte","neighborhood":"Caiçaras","segment":"Estética / beleza","email":"anaenfnewton@yahoo.com.br","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":49,"name":"Dr. Laser Pampulha","neighborhood":"São José / Pampulha","segment":"Estética / depilação","email":"pampulha@drlaser.com.br","priority":"B","website":"https://drlaser.com.br/lojas/unidade-pampulha.php","address":"","stage":"Novo lead"},{"id":50,"name":"MaisLaser Pampulha","neighborhood":"Santa Branca","segment":"Estética / bem-estar","email":"vanessagestaobh@gmail.com","priority":"B","website":"","address":"","stage":"Novo lead"}];
 const stages=["Novo lead","Pesquisado","Contato preparado","E-mail enviado","Respondeu","Oportunidade","Cliente","Perdido"];
@@ -296,10 +331,75 @@ function metrics(){
  const cards=document.querySelectorAll("#dash .value");if(cards[3])cards[3].textContent=crit;
 }
 function renderFilters(){const n=document.getElementById("neigh");if(!n)return;const cur=n.value,ns=[...new Set(leads.map(l=>l.neighborhood).filter(Boolean))].sort();n.innerHTML='<option value="">Todos os bairros</option>'+ns.map(x=>'<option>'+esc(x)+'</option>').join("");n.value=cur}
-function renderAll(){renderFilters();renderLeads();renderStock();renderCash();metrics()}
+
+function reportRange(type,key){
+ const parts=key.split("-").map(Number),y=parts[0],p=parts[1];
+ if(type==="month") return [new Date(y,p-1,1),new Date(y,p,1)];
+ const start=(p-1)*3; return [new Date(y,start,1),new Date(y,start+3,1)];
+}
+function reportKeyForDate(d,type){
+ const x=new Date(d),y=x.getFullYear(),m=x.getMonth()+1;
+ return type==="month" ? y+"-"+String(m).padStart(2,"0") : y+"-"+(Math.floor((m-1)/3)+1);
+}
+function reportLabel(key,type){
+ const parts=key.split("-").map(Number),y=parts[0],p=parts[1];
+ if(type==="month") return new Date(y,p-1,1).toLocaleDateString("pt-BR",{month:"long",year:"numeric"});
+ return p+"º trimestre de "+y;
+}
+function setupReportPeriods(){
+ const type=document.getElementById("reportType")?.value||"month";
+ const sel=document.getElementById("reportPeriod"); if(!sel)return;
+ const dates=[...sales.map(x=>x.sold_at),...cash.map(x=>x.occurred_at),...leads.map(x=>x.created_at)]
+   .filter(Boolean).map(x=>new Date(x)).filter(x=>!isNaN(x));
+ dates.push(new Date());
+ const keys=[...new Set(dates.map(d=>reportKeyForDate(d,type)))].sort().reverse();
+ const cur=sel.value;
+ sel.innerHTML=keys.map(k=>'<option value="'+k+'">'+reportLabel(k,type)+'</option>').join("");
+ if(keys.includes(cur)) sel.value=cur;
+}
+function renderReports(){
+ const type=document.getElementById("reportType")?.value||"month";
+ setupReportPeriods();
+ const key=document.getElementById("reportPeriod")?.value; if(!key)return;
+ const range=reportRange(type,key),start=range[0],end=range[1],inside=d=>{const x=new Date(d);return x>=start&&x<end};
+ const ss=sales.filter(x=>inside(x.sold_at));
+ const cc=cash.filter(x=>inside(x.occurred_at));
+ const ll=leads.filter(x=>inside(x.created_at));
+ const rev=ss.reduce((a,b)=>a+Number(b.total||0),0);
+ const cin=cc.filter(x=>x.movement_type==="entrada").reduce((a,b)=>a+Number(b.amount||0),0);
+ const cout=cc.filter(x=>x.movement_type==="saida").reduce((a,b)=>a+Number(b.amount||0),0);
+ document.getElementById("rRevenue").textContent=brl(rev);
+ document.getElementById("rSales").textContent=ss.length;
+ document.getElementById("rLeads").textContent=ll.length;
+ document.getElementById("rBalance").textContent=brl(cin-cout);
+ document.getElementById("reportFinance").innerHTML=
+  '<div class="report-row"><span>Entradas</span><b>'+brl(cin)+'</b></div>'+
+  '<div class="report-row"><span>Saídas</span><b>'+brl(cout)+'</b></div>'+
+  '<div class="report-row"><span>Faturamento em vendas</span><b>'+brl(rev)+'</b></div>'+
+  '<div class="report-row"><span>Ticket médio</span><b>'+brl(ss.length?rev/ss.length:0)+'</b></div>';
+ const stageCounts=stages.map(s=>({s:s,n:leads.filter(l=>l.stage===s).length})).filter(x=>x.n);
+ const max=Math.max(1,...stageCounts.map(x=>x.n));
+ document.getElementById("reportCRM").innerHTML=
+  '<div class="report-row"><span>Leads criados no período</span><b>'+ll.length+'</b></div>'+
+  '<div class="report-row"><span>Clientes atuais</span><b>'+leads.filter(l=>l.stage==="Cliente").length+'</b></div>'+
+  stageCounts.map(x=>'<div style="padding:7px 0"><div class="report-row" style="padding:0;border:0"><span>'+x.s+'</span><b>'+x.n+'</b></div><div class="report-bar"><i style="width:'+(x.n/max*100)+'%"></i></div></div>').join("");
+ const channels={}; ss.forEach(x=>{const k=x.channel||"Não informado";channels[k]=(channels[k]||0)+Number(x.total||0)});
+ const entries=Object.entries(channels).sort((a,b)=>b[1]-a[1]);
+ document.getElementById("reportChannels").innerHTML=entries.length
+  ? entries.map(([k,v])=>'<div class="report-row"><span>'+esc(k)+'</span><b>'+brl(v)+'</b></div>').join("")
+  : '<div class="notice">Sem vendas registradas neste período.</div>';
+ const critical=stock.filter(x=>x.stock_qty<x.min_stock);
+ document.getElementById("reportStock").innerHTML=
+  '<div class="report-row"><span>Produtos cadastrados</span><b>'+stock.length+'</b></div>'+
+  '<div class="report-row"><span>Estoque crítico</span><b>'+critical.length+'</b></div>'+
+  critical.map(x=>'<div class="report-row"><span>'+esc(x.name)+'</span><b>'+x.stock_qty+' / mín. '+x.min_stock+'</b></div>').join("");
+}
+window.renderReports=renderReports;
+
+function renderAll(){renderFilters();renderLeads();renderStock();renderCash();metrics();renderReports()}
 
 document.querySelectorAll("[data-page]").forEach(b=>b.onclick=()=>{const id=b.dataset.page;document.querySelectorAll("[data-page]").forEach(x=>x.classList.toggle("active",x.dataset.page===id));document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id===id));window.scrollTo({top:0,behavior:"smooth"})});
-["search","priority","neigh"].forEach(id=>document.getElementById(id)?.addEventListener("input",renderLeads));
+["search","priority","neigh"].forEach(id=>document.getElementById(id)?.addEventListener("input",renderLeads));document.getElementById("reportType")?.addEventListener("change",()=>{document.getElementById("reportPeriod").innerHTML="";renderReports()});document.getElementById("reportPeriod")?.addEventListener("change",renderReports);
 
 (async()=>{
  const {data}=await sb.auth.getSession();
