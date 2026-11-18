@@ -50,7 +50,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:11px 7px;
 </div><div class="app"><aside><div class="brand">ALURA<small>GESTÃO & CRM</small></div><nav>
 <button class="active" data-page="dash">Visão geral</button><button data-page="crm">CRM</button><button data-page="email">E-mails</button><button data-page="estoque">Estoque</button><button data-page="vendas">Vendas & caixa</button><button data-page="social">Instagram & WhatsApp</button></nav></aside>
 <main><div class="top"><b>ALURA Gestão</b><div style="display:flex;align-items:center;gap:10px"><span id="syncLabel">Supabase · conectando…</span><button class="btn soft" onclick="signOut()">Sair</button></div></div><div class="content">
-<section id="dash" class="page active"><h1>Visão geral</h1><div class="sub">Um painel simples para tocar a Alura sem virar refém de planilha.</div><div class="grid4"><div class="card"><div class="label">Leads</div><div class="value" id="mLeads">50</div></div><div class="card"><div class="label">Em contato</div><div class="value" id="mContact">0</div></div><div class="card"><div class="label">Clientes</div><div class="value" id="mClients">0</div></div><div class="card"><div class="label">Estoque crítico</div><div class="value">3</div></div></div><div class="panel"><div class="notice">Os dados operacionais deste painel são salvos no Supabase e ficam sincronizados entre os aparelhos autorizados.</div><div class="notice">Instagram e WhatsApp estão apenas com a área preparada. A conexão real entra depois via Meta Business.</div></div></section>
+<section id="dash" class="page active"><h1>Visão geral</h1><div class="sub">Um painel simples para tocar a Alura sem virar refém de planilha.</div><div class="grid4"><div class="card"><div class="label">Leads</div><div class="value" id="mLeads">50</div></div><div class="card"><div class="label">Em contato</div><div class="value" id="mContact">0</div></div><div class="card"><div class="label">Clientes</div><div class="value" id="mClients">0</div></div><div class="card"><div class="label">Estoque crítico</div><div class="value">3</div></div></div><div class="panel"><div class="notice">Quando o Supabase está conectado, os dados ficam sincronizados entre aparelhos. Se houver falha, o CRM abre automaticamente em modo local para não interromper a operação.</div><div class="notice">Instagram e WhatsApp estão apenas com a área preparada. A conexão real entra depois via Meta Business.</div></div></section>
 
 <section id="crm" class="page"><h1>CRM Outbound</h1><div class="sub">Cada lead já vem com contexto comercial e e-mail personalizado pronto para copiar e colar.</div>
 <div class="toolbar"><input id="search" placeholder="Buscar negócio, bairro, nicho ou e-mail"><select id="priority"><option value="">Todas as prioridades</option><option>A</option><option>B</option><option>C</option></select><select id="neigh"><option value="">Todos os bairros</option></select><button class="btn primary" onclick="openLeadForm()">+ Novo lead</button></div><div id="leadList" class="leads"></div></section>
@@ -202,21 +202,28 @@ async function startApp(){
  }catch(e){
    console.error("ALURA/Supabase",e);
    setBusy(false);
-   setSync("Erro de sincronização");
+   // Fallback: CRM permanece utilizável mesmo se o Supabase estiver com erro.
+   leads=seed.map(l=>({...l,id:"local-"+l.id,city:"Belo Horizonte",state:"MG"}));
+   stock=stockSeed.map((p,i)=>({...p,id:"local-stock-"+(i+1)}));
+   cash=[];sales=[];
+   renderAll();
+   setSync("Modo local · Supabase indisponível");
    const msg=errorText(e);
    openModal(
-     '<h2>Diagnóstico do Supabase</h2>'+
-     '<div class="notice"><b>O login funcionou</b>, mas o painel não conseguiu completar a leitura/gravação do banco.</div>'+
+     '<h2>Supabase ainda não sincronizou</h2>'+
+     '<div class="notice"><b>O CRM foi carregado em modo local</b>. Os 50 leads, e-mails personalizados e estoque continuam disponíveis para uso e teste.</div>'+
      '<div class="field full"><label>Erro técnico</label><textarea readonly style="min-height:120px">'+esc(msg)+'</textarea></div>'+
-     '<p class="meta">Copie este erro se precisar me enviar. Ele identifica a tabela, policy ou permissão que está falhando.</p>'+
-     '<div class="modalactions"><button class="btn soft" onclick="location.reload()">Recarregar</button></div>'
+     '<p class="meta">Enquanto este erro existir, alterações feitas no modo local não serão gravadas no banco. O login da Alura continua válido.</p>'+
+     '<div class="modalactions"><button class="btn soft" onclick="closeModal()">Usar CRM agora</button><button class="btn primary" onclick="location.reload()">Testar sincronização</button></div>'
    );
  }
 }
 
 async function setStage(id,v){
+ const l=leads.find(x=>x.id===id);
+ if(String(id).startsWith("local-")){if(l)l.stage=v;renderAll();return}
  const r=await sb.from("leads").update({stage:v}).eq("id",id);if(r.error)return alert(r.error.message);
- const l=leads.find(x=>x.id===id);if(l)l.stage=v;renderAll();
+ if(l)l.stage=v;renderAll();
 }
 window.setStage=setStage;
 
@@ -247,7 +254,7 @@ async function deleteLead(id){if(!confirm("Excluir este lead?"))return;const r=a
 window.deleteLead=deleteLead;
 
 function renderStock(){const el=document.getElementById("stockList");if(!el)return;el.innerHTML=stock.map(x=>'<div class="stockrow"><b>'+esc(x.name)+'</b><span>'+x.stock_qty+' un.</span><span>mín. '+x.min_stock+'</span><span class="badge '+(x.stock_qty<x.min_stock?"C":x.stock_qty<=x.min_stock+2?"B":"A")+'">'+(x.stock_qty<x.min_stock?"Crítico":x.stock_qty<=x.min_stock+2?"Atenção":"OK")+'</span><div class="qtyBtns"><button onclick="qty(\''+x.id+'\',-1)">−</button><button onclick="qty(\''+x.id+'\',1)">+</button></div></div>').join("")}
-async function qty(id,d){const x=stock.find(s=>s.id===id),next=Math.max(0,x.stock_qty+d);const u=await sb.from("products").update({stock_qty:next}).eq("id",id);if(u.error)return alert(u.error.message);await sb.from("stock_movements").insert({owner_id:currentUser.id,product_id:id,movement_type:d>0?"entrada":"saida",quantity:Math.abs(d),reason:"Ajuste manual"});x.stock_qty=next;renderAll()}
+async function qty(id,d){const x=stock.find(s=>s.id===id),next=Math.max(0,x.stock_qty+d);if(String(id).startsWith("local-stock-")){x.stock_qty=next;renderAll();return}const u=await sb.from("products").update({stock_qty:next}).eq("id",id);if(u.error)return alert(u.error.message);await sb.from("stock_movements").insert({owner_id:currentUser.id,product_id:id,movement_type:d>0?"entrada":"saida",quantity:Math.abs(d),reason:"Ajuste manual"});x.stock_qty=next;renderAll()}
 window.qty=qty;
 
 function openStockForm(){openModal('<h2>Novo produto</h2><div class="formgrid"><div class="field full"><label>Produto</label><input id="sfName"></div><div class="field"><label>Quantidade</label><input id="sfQty" type="number" min="0" value="0"></div><div class="field"><label>Mínimo</label><input id="sfMin" type="number" min="0" value="5"></div><div class="field"><label>Preço</label><input id="sfPrice" type="number" step="0.01" min="0" value="0"></div><div class="field"><label>Categoria</label><input id="sfCat"></div></div><div class="modalactions"><button class="btn primary" onclick="saveStock()">Adicionar</button></div>')}
