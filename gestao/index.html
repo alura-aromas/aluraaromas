@@ -28,10 +28,29 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:11px 7px;
 .fact b{font-size:12px}
 .copyok{background:#dbe4d2!important;color:#3d513a!important}
 @media(max-width:700px){.leadfacts{grid-template-columns:1fr 1fr}.emailhead{align-items:flex-start;flex-direction:column}.emailhead .btn{width:100%}}
-</style></head><body><div class="app"><aside><div class="brand">ALURA<small>GESTÃO & CRM</small></div><nav>
+
+.authgate{position:fixed;inset:0;z-index:999;background:linear-gradient(180deg,#eadbc6,#d9c3a6);display:flex;align-items:center;justify-content:center;padding:18px}
+.authgate.hidden{display:none}.authbox{width:min(420px,100%);background:#f7eddc;border:1px solid var(--line);border-radius:24px;padding:26px;box-shadow:0 28px 90px rgba(45,33,24,.25)}
+.authbrand{font:700 28px Georgia,serif;letter-spacing:.09em;margin-bottom:24px}.authbrand small{display:block;font:700 9px Arial,sans-serif;color:var(--muted);letter-spacing:.16em;margin-top:4px}
+.authbox h2{margin:0 0 8px;font:700 30px Georgia,serif}.authbox p{color:var(--muted);font-size:13px;line-height:1.5}.authmsg{min-height:20px;margin-top:10px;font-size:12px;color:#8a4c3e}
+.loading{opacity:.55;pointer-events:none}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head><body>
+<div id="authGate" class="authgate">
+  <div class="authbox">
+    <div class="authbrand">ALURA<small>GESTÃO & CRM</small></div>
+    <h2>Entrar</h2>
+    <p>Use o usuário criado no Supabase para acessar os dados da Alura.</p>
+    <div class="field"><label>E-mail</label><input id="authEmail" type="email" autocomplete="email"></div>
+    <div class="field" style="margin-top:10px"><label>Senha</label><input id="authPassword" type="password" autocomplete="current-password"></div>
+    <button id="authBtn" class="btn primary" style="width:100%;margin-top:14px" onclick="signIn()">Entrar</button>
+    <div id="authMsg" class="authmsg"></div>
+  </div>
+</div><div class="app"><aside><div class="brand">ALURA<small>GESTÃO & CRM</small></div><nav>
 <button class="active" data-page="dash">Visão geral</button><button data-page="crm">CRM</button><button data-page="email">E-mails</button><button data-page="estoque">Estoque</button><button data-page="vendas">Vendas & caixa</button><button data-page="social">Instagram & WhatsApp</button></nav></aside>
-<main><div class="top"><b>ALURA Gestão</b><span>Protótipo funcional · dados locais</span></div><div class="content">
-<section id="dash" class="page active"><h1>Visão geral</h1><div class="sub">Um painel simples para tocar a Alura sem virar refém de planilha.</div><div class="grid4"><div class="card"><div class="label">Leads</div><div class="value" id="mLeads">50</div></div><div class="card"><div class="label">Em contato</div><div class="value" id="mContact">0</div></div><div class="card"><div class="label">Clientes</div><div class="value" id="mClients">0</div></div><div class="card"><div class="label">Estoque crítico</div><div class="value">3</div></div></div><div class="panel"><div class="notice">Os dados comerciais editados neste painel ficam salvos no navegador deste aparelho via localStorage. Nada de caixa/pipeline é gravado publicamente no GitHub.</div><div class="notice">Instagram e WhatsApp estão apenas com a área preparada. A conexão real entra depois via Meta Business.</div></div></section>
+<main><div class="top"><b>ALURA Gestão</b><div style="display:flex;align-items:center;gap:10px"><span id="syncLabel">Supabase · conectando…</span><button class="btn soft" onclick="signOut()">Sair</button></div></div><div class="content">
+<section id="dash" class="page active"><h1>Visão geral</h1><div class="sub">Um painel simples para tocar a Alura sem virar refém de planilha.</div><div class="grid4"><div class="card"><div class="label">Leads</div><div class="value" id="mLeads">50</div></div><div class="card"><div class="label">Em contato</div><div class="value" id="mContact">0</div></div><div class="card"><div class="label">Clientes</div><div class="value" id="mClients">0</div></div><div class="card"><div class="label">Estoque crítico</div><div class="value">3</div></div></div><div class="panel"><div class="notice">Os dados operacionais deste painel são salvos no Supabase e ficam sincronizados entre os aparelhos autorizados.</div><div class="notice">Instagram e WhatsApp estão apenas com a área preparada. A conexão real entra depois via Meta Business.</div></div></section>
 
 <section id="crm" class="page"><h1>CRM Outbound</h1><div class="sub">Cada lead já vem com contexto comercial e e-mail personalizado pronto para copiar e colar.</div>
 <div class="toolbar"><input id="search" placeholder="Buscar negócio, bairro, nicho ou e-mail"><select id="priority"><option value="">Todas as prioridades</option><option>A</option><option>B</option><option>C</option></select><select id="neigh"><option value="">Todos os bairros</option></select><button class="btn primary" onclick="openLeadForm()">+ Novo lead</button></div><div id="leadList" class="leads"></div></section>
@@ -45,7 +64,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:11px 7px;
 <div class="toolbar"><button class="btn primary" onclick="openStockForm()">+ Produto</button></div>
 <div class="panel"><div id="stockList"></div></div></section>
 
-<section id="vendas" class="page"><h1>Vendas & caixa</h1><div class="sub">Registre vendas, entradas e saídas. Tudo fica salvo neste navegador.</div>
+<section id="vendas" class="page"><h1>Vendas & caixa</h1><div class="sub">Registre vendas, entradas e saídas. Os dados ficam salvos no Supabase.</div>
 <div class="toolbar"><button class="btn primary" onclick="openSaleForm()">+ Registrar venda</button><button class="btn soft" onclick="openCashForm()">+ Entrada / saída</button></div>
 <div class="grid4"><div class="card"><div class="label">Faturamento</div><div class="value" id="revTotal">R$ 0,00</div></div><div class="card"><div class="label">Entradas</div><div class="value" id="cashIn">R$ 0,00</div></div><div class="card"><div class="label">Saídas</div><div class="value" id="cashOut">R$ 0,00</div></div><div class="card"><div class="label">Saldo</div><div class="value" id="cashBalance">R$ 0,00</div></div></div>
 <div class="panel"><h3>Movimentações</h3><div id="cashList"></div></div></section>
@@ -55,34 +74,48 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:11px 7px;
 <div id="modal" class="modal" onclick="if(event.target===this)closeModal()"><div class="modalbox"><button class="x" onclick="closeModal()">×</button><div id="modalContent"></div></div></div><script>
 const seed=[{"id":1,"name":"Face Pampulha Estética Avançada","neighborhood":"Itapoã","segment":"Estética avançada","email":"botopremium.pampulha@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":2,"name":"Laser Care Estética","neighborhood":"Santa Amélia","segment":"Estética / massagens","email":"gabrielawerneck.biomed@gmail.com","priority":"A","website":"https://lasercareestetica.com.br/","address":"","stage":"Novo lead"},{"id":3,"name":"Bravi Estética Avançada","neighborhood":"Itapoã","segment":"Estética","email":"braviestetica@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":4,"name":"M V Saúde Estética e Bem-Estar","neighborhood":"Itapoã","segment":"Estética / bem-estar","email":"mv.clinica@outlook.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":5,"name":"Cristiane Alves Ribeiro","neighborhood":"Itapoã","segment":"Estética","email":"estudof@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":6,"name":"MBA Estética Avançada","neighborhood":"Pampulha","segment":"Estética","email":"micaellealvarenga@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":7,"name":"Tânia Mara Barbosa Studio","neighborhood":"Santa Amélia","segment":"Estética","email":"marabarbosa.studio@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":8,"name":"Be.Long","neighborhood":"Santa Amélia","segment":"Estética","email":"mairaferrarienf@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":9,"name":"Luiza Jardim","neighborhood":"Jaraguá","segment":"Estética avançada","email":"luizaesteticaavancada@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":10,"name":"Keola Estética","neighborhood":"Jaraguá","segment":"Estética / emagrecimento","email":"keola@keola.com.br","priority":"A","website":"https://keola.com.br/","address":"","stage":"Novo lead"},{"id":11,"name":"Suav Ouro Preto","neighborhood":"Ouro Preto","segment":"Beleza / estética","email":"suav.ouropreto@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":12,"name":"Rondinele Mendes Hair & Makeup","neighborhood":"Ouro Preto","segment":"Salão / maquiagem","email":"rondinelemendesrosahairmakeup@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":13,"name":"Leidedaiana Ferreira","neighborhood":"Castelo","segment":"Beleza / cabelo","email":"ladydayf@gmail.com","priority":"B","website":"","address":"","stage":"Novo lead"},{"id":14,"name":"Harmonizze Estética e Odontologia","neighborhood":"São Gabriel","segment":"Estética","email":"harmonizze.estetic@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":15,"name":"Aline Cristiane Passos","neighborhood":"São Gabriel","segment":"Estética / beleza","email":"dra.alininha@yahoo.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":16,"name":"Nicole Rodrigues Costa","neighborhood":"São Gabriel","segment":"Estética","email":"nicol3wx2006@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":17,"name":"Andressa Ramos de Jesus","neighborhood":"São Gabriel","segment":"Estética","email":"andressa_arj@hotmail.com.br","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":18,"name":"Jéssica Cristina Araújo","neighborhood":"São Gabriel","segment":"Estética","email":"esteticajessicaaraujo@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":19,"name":"Renara Ferreira de Sá","neighborhood":"São Gabriel","segment":"Estética / cabelo","email":"sarenara@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":20,"name":"Vânia Fernandes de Sá","neighborhood":"São Gabriel","segment":"Beleza","email":"vaniafernandessa@gmail.com","priority":"B","website":"","address":"","stage":"Novo lead"},{"id":21,"name":"Priscila S. Felisberto","neighborhood":"Cidade Nova","segment":"Estética","email":"priscilasestetica@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":22,"name":"CN Beleza","neighborhood":"Cidade Nova","segment":"Salão / estética","email":"alesantiago2019@icloud.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":23,"name":"Jaqueline Simão Cleres","neighborhood":"Cidade Nova","segment":"Cabelo / beleza","email":"jaqueline.cleres@yahoo.com.br","priority":"B","website":"","address":"","stage":"Novo lead"},{"id":24,"name":"Lode Hair","neighborhood":"Cidade Nova","segment":"Estética / cabelo","email":"contato@lodehair.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":25,"name":"Althea Health","neighborhood":"União","segment":"Estética / wellness","email":"usealtheahealth@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":26,"name":"Belíssima Estética","neighborhood":"União","segment":"Estética / sobrancelhas","email":"sobrancelhasbhadm@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":27,"name":"Juliana Alves Saúde Capilar & Pele","neighborhood":"União","segment":"Pele / cabelo","email":"juliaesalves@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":28,"name":"Instituto Vitta Beauty","neighborhood":"União","segment":"Estética avançada","email":"draluiizacardoso@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":29,"name":"Mara Tranças","neighborhood":"União","segment":"Beleza / cabelos","email":"maratrancas2024@gmail.com","priority":"B","website":"","address":"","stage":"Novo lead"},{"id":30,"name":"Leidiane Veloso","neighborhood":"União","segment":"Salão / beleza","email":"leidianeveloso88@gmail.com","priority":"B","website":"","address":"","stage":"Novo lead"},{"id":31,"name":"João Victor Santos Peres","neighborhood":"União","segment":"Beleza","email":"peresgold625@gmail.com","priority":"C","website":"","address":"","stage":"Novo lead"},{"id":32,"name":"Dra. Denise Sande Estética","neighborhood":"Dona Clara","segment":"Estética avançada","email":"sande.clinic@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":33,"name":"Carolina Jory Estética","neighborhood":"Dona Clara","segment":"Estética","email":"anacarolinajory@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":34,"name":"Isabella Ribeiro de Almeida","neighborhood":"Dona Clara","segment":"Estética","email":"isabellaribeiroalmeida@hotmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":35,"name":"Fernanda Biato","neighborhood":"Dona Clara","segment":"Beleza / estética","email":"biatofernanda06@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":36,"name":"Raissa Gabriela Hovanes","neighborhood":"Dona Clara","segment":"Beleza","email":"raissagabrielahovanes@gmail.com","priority":"B","website":"","address":"","stage":"Novo lead"},{"id":37,"name":"Selmira Lages","neighborhood":"Dona Clara","segment":"Beleza","email":"selmiralages@hotmail.com","priority":"B","website":"","address":"","stage":"Novo lead"},{"id":38,"name":"Maria de Jesus Ribeiro","neighborhood":"Dona Clara","segment":"Beleza","email":"geise180683@gmail.com","priority":"B","website":"","address":"","stage":"Novo lead"},{"id":39,"name":"Sinta-C","neighborhood":"Ipiranga","segment":"Estética integrada","email":"sintacestetica@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":40,"name":"Maria Neide Vieira","neighborhood":"Ipiranga","segment":"Estética / beleza","email":"marianeidevieira03@gmail.com","priority":"B","website":"","address":"","stage":"Novo lead"},{"id":41,"name":"Raze Beauty","neighborhood":"Ipiranga","segment":"Salão / estética","email":"taizdouglascamargo@yahoo.com.br","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":42,"name":"Denise de Paiva Ramos","neighborhood":"Ipiranga","segment":"Beleza / estética","email":"pretinhaefernando@hotmail.com","priority":"B","website":"","address":"","stage":"Novo lead"},{"id":43,"name":"Leida Aparecida da Silva","neighborhood":"Ipiranga","segment":"Estética / beleza","email":"leidasilva929@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":44,"name":"Neurinha Damazio","neighborhood":"Ipiranga","segment":"Beleza","email":"sarahdmazio@gmail.com","priority":"B","website":"","address":"","stage":"Novo lead"},{"id":45,"name":"Adriana Esmalteria BH","neighborhood":"Floresta","segment":"Esmalteria / estética","email":"adrianaesmalteriabh@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":46,"name":"Emanuelle Resende","neighborhood":"Sagrada Família","segment":"Beleza","email":"emanuellerpferreira03@gmail.com","priority":"B","website":"","address":"","stage":"Novo lead"},{"id":47,"name":"Maria Lúcia de Lima","neighborhood":"Centro","segment":"Estética","email":"luciaesteta.rosa@gmail.com","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":48,"name":"Centro de Estética Ana Duarte","neighborhood":"Caiçaras","segment":"Estética / beleza","email":"anaenfnewton@yahoo.com.br","priority":"A","website":"","address":"","stage":"Novo lead"},{"id":49,"name":"Dr. Laser Pampulha","neighborhood":"São José / Pampulha","segment":"Estética / depilação","email":"pampulha@drlaser.com.br","priority":"B","website":"https://drlaser.com.br/lojas/unidade-pampulha.php","address":"","stage":"Novo lead"},{"id":50,"name":"MaisLaser Pampulha","neighborhood":"Santa Branca","segment":"Estética / bem-estar","email":"vanessagestaobh@gmail.com","priority":"B","website":"","address":"","stage":"Novo lead"}];
 const stages=["Novo lead","Pesquisado","Contato preparado","E-mail enviado","Respondeu","Oportunidade","Cliente","Perdido"];
-const stockSeed=[{id:1,name:"Véspera",qty:6,min:10},{id:2,name:"Bruma Branca",qty:17,min:10},{id:3,name:"Caramelatto",qty:11,min:10},{id:4,name:"Gaia",qty:18,min:10},{id:5,name:"Aura Spray",qty:15,min:8},{id:6,name:"Oceano Spray",qty:12,min:8},{id:7,name:"Rubi Spray",qty:9,min:8}];
-let leads=JSON.parse(localStorage.getItem("aluraLeads")||"null")||seed;
-let stock=JSON.parse(localStorage.getItem("aluraStock")||"null")||stockSeed;
-let cash=JSON.parse(localStorage.getItem("aluraCash")||"null")||[];
+const stockSeed=[
+ {name:"Véspera",category:"Vela",unit_price:49.90,stock_qty:6,min_stock:10},
+ {name:"Bruma Branca",category:"Vela",unit_price:49.90,stock_qty:17,min_stock:10},
+ {name:"Caramelatto",category:"Vela",unit_price:49.90,stock_qty:11,min_stock:10},
+ {name:"Gaia",category:"Vela",unit_price:49.90,stock_qty:18,min_stock:10},
+ {name:"Aura Spray",category:"Spray",unit_price:0,stock_qty:15,min_stock:8},
+ {name:"Oceano Spray",category:"Spray",unit_price:0,stock_qty:12,min_stock:8},
+ {name:"Rubi Spray",category:"Spray",unit_price:0,stock_qty:9,min_stock:8}
+];
+
+const SB_URL="https://knsinfiyvltesneknaof.supabase.co";
+const SB_KEY="sb_publishable_SA7VLnWCJL6Fqx3v78pRNA_PzIU_Pvt";
+const sb=supabase.createClient(SB_URL,SB_KEY);
+
+let currentUser=null,leads=[],stock=[],cash=[],sales=[];
 const brl=v=>Number(v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
-const save=()=>{localStorage.setItem("aluraLeads",JSON.stringify(leads));localStorage.setItem("aluraStock",JSON.stringify(stock));localStorage.setItem("aluraCash",JSON.stringify(cash));renderAll()};
 const modal=document.getElementById("modal"),mc=document.getElementById("modalContent");
-function openModal(x){mc.innerHTML=x;modal.classList.add("open")} function closeModal(){modal.classList.remove("open");mc.innerHTML=""} window.closeModal=closeModal;
-function maps(l){return "https://www.google.com/maps/search/?api=1&query="+encodeURIComponent((l.address||l.name+", "+l.neighborhood)+", Belo Horizonte MG")}
+function openModal(x){mc.innerHTML=x;modal.classList.add("open")}
+function closeModal(){modal.classList.remove("open");mc.innerHTML=""}
+window.closeModal=closeModal;
+function esc(s){return String(s||"").replaceAll("&","&amp;").replaceAll('"',"&quot;").replaceAll("<","&lt;")}
+function maps(l){return "https://www.google.com/maps/search/?api=1&query="+encodeURIComponent((l.address||l.name+", "+(l.neighborhood||""))+", "+(l.city||"Belo Horizonte")+" "+(l.state||"MG"))}
+
 function emailForLead(l){
  const seg=(l.segment||"").toLowerCase();
  let angle="experiência e cuidado no atendimento";
- let para1="Vi que vocês atuam com "+l.segment.toLowerCase()+" em "+l.neighborhood+", e achei que existe uma conexão natural com a proposta da Alura.";
+ let para1="Vi que vocês atuam com "+(l.segment||"seu segmento").toLowerCase()+" em "+(l.neighborhood||"Belo Horizonte")+", e achei que existe uma conexão natural com a proposta da Alura.";
  let para2="A gente cria velas e aromas artesanais para transformar o ambiente e prolongar a sensação de cuidado que a cliente já vive no atendimento.";
  let offer="Podemos montar uma proposta simples para ambientação do espaço, presentes para clientes ou pedidos em quantidade.";
  if(seg.includes("massag")||seg.includes("wellness")||seg.includes("bem-estar")){
    angle="ambientação e experiência sensorial";
-   para1="Vi que a "+l.name+" trabalha com "+l.segment.toLowerCase()+" em "+l.neighborhood+". Nesse tipo de atendimento, o ambiente também faz parte da experiência.";
+   para1="Vi que a "+l.name+" trabalha com "+(l.segment||"bem-estar").toLowerCase()+" em "+(l.neighborhood||"Belo Horizonte")+". Nesse tipo de atendimento, o ambiente também faz parte da experiência.";
    para2="A Alura cria velas e aromas artesanais que ajudam a construir uma atmosfera de pausa, conforto e presença — algo que pode complementar o momento que vocês já entregam às clientes.";
    offer="Dá para pensar tanto em ambientação quanto em kits e lembranças para clientes.";
  } else if(seg.includes("salão")||seg.includes("cabelo")||seg.includes("esmalteria")||seg.includes("beleza")){
    angle="fidelização e presente para clientes";
-   para1="Conheci a "+l.name+", em "+l.neighborhood+", e gostei da conexão com o universo de beleza e autocuidado.";
+   para1="Conheci a "+l.name+", em "+(l.neighborhood||"Belo Horizonte")+", e gostei da conexão com o universo de beleza e autocuidado.";
    para2="Na Alura, a gente trabalha com velas e aromas artesanais que podem virar um detalhe de experiência no espaço ou um presente para clientes em ações de fidelização e datas especiais.";
    offer="Também conseguimos montar pedidos em quantidade ou formatos pensados para revenda.";
  } else if(seg.includes("estética")){
    angle="experiência no espaço e relacionamento";
-   para1="Conheci a "+l.name+", que atua com "+l.segment.toLowerCase()+" em "+l.neighborhood+", e achei que a proposta de vocês conversa bastante com a Alura.";
+   para1="Conheci a "+l.name+", que atua com "+(l.segment||"estética").toLowerCase()+" em "+(l.neighborhood||"Belo Horizonte")+", e achei que a proposta de vocês conversa bastante com a Alura.";
    para2="Criamos velas e aromas artesanais pensados para trazer sensação de cuidado, presença e acolhimento ao ambiente — algo que pode somar à experiência que a cliente já tem no atendimento.";
    offer="Podemos montar opções para ambientação, presente pós-atendimento, kits ou pedidos em quantidade.";
  }
@@ -90,44 +123,145 @@ function emailForLead(l){
  const body="Olá, tudo bem?\n\n"+para1+"\n\n"+para2+"\n\n"+offer+"\n\nNosso catálogo: https://alura-aromas.github.io/aluraaromas/\n\nSe fizer sentido, posso te mostrar algumas opções de forma bem prática.\n\nAbraço,\nJenifer\nALURA — Velas & Aromas Artesanais";
  return {subject,body,angle};
 }
-function gmail(l){const e=emailForLead(l);return "https://mail.google.com/mail/?view=cm&fs=1&to="+encodeURIComponent(l.email)+"&su="+encodeURIComponent(e.subject)+"&body="+encodeURIComponent(e.body)}
-function copyEmail(id,btn){const l=leads.find(x=>x.id===id),e=emailForLead(l);const full="Para: "+l.email+"\nAssunto: "+e.subject+"\n\n"+e.body;navigator.clipboard.writeText(full).then(()=>{const t=btn.textContent;btn.textContent="Copiado ✓";btn.classList.add("copyok");setTimeout(()=>{btn.textContent=t;btn.classList.remove("copyok")},1600)}).catch(()=>prompt("Copie o e-mail:",full))}
+function gmail(l){const e=emailForLead(l);return "https://mail.google.com/mail/?view=cm&fs=1&to="+encodeURIComponent(l.email||"")+"&su="+encodeURIComponent(e.subject)+"&body="+encodeURIComponent(e.body)}
+function copyEmail(id,btn){const l=leads.find(x=>x.id===id),e=emailForLead(l);const full="Para: "+(l.email||"")+"\nAssunto: "+e.subject+"\n\n"+e.body;navigator.clipboard.writeText(full).then(()=>{const t=btn.textContent;btn.textContent="Copiado ✓";btn.classList.add("copyok");setTimeout(()=>{btn.textContent=t;btn.classList.remove("copyok")},1600)}).catch(()=>prompt("Copie o e-mail:",full))}
 window.copyEmail=copyEmail;
+
+function setSync(t){const e=document.getElementById("syncLabel");if(e)e.textContent=t}
+function setBusy(on){document.querySelector(".app")?.classList.toggle("loading",on)}
+
+async function signIn(){
+ const email=document.getElementById("authEmail").value.trim(),password=document.getElementById("authPassword").value;
+ const msg=document.getElementById("authMsg"),btn=document.getElementById("authBtn");
+ if(!email||!password){msg.textContent="Informe e-mail e senha.";return}
+ btn.disabled=true;btn.textContent="Entrando…";msg.textContent="";
+ const {data,error}=await sb.auth.signInWithPassword({email,password});
+ btn.disabled=false;btn.textContent="Entrar";
+ if(error){msg.textContent="Não foi possível entrar: "+error.message;return}
+ currentUser=data.user;await startApp();
+}
+window.signIn=signIn;
+
+async function signOut(){await sb.auth.signOut();location.reload()}
+window.signOut=signOut;
+
+async function seedIfEmpty(){
+ const {count,error}=await sb.from("leads").select("*",{count:"exact",head:true});
+ if(error)throw error;
+ if(count===0){
+   const rows=seed.map(l=>({owner_id:currentUser.id,name:l.name,neighborhood:l.neighborhood,city:"Belo Horizonte",state:"MG",segment:l.segment,email:l.email,website:l.website||null,address:l.address||null,priority:l.priority,stage:l.stage,source:"Base inicial OTB"}));
+   const r=await sb.from("leads").insert(rows); if(r.error)throw r.error;
+ }
+ const pc=await sb.from("products").select("*",{count:"exact",head:true});
+ if(pc.error)throw pc.error;
+ if(pc.count===0){
+   const rows=stockSeed.map(p=>({...p,owner_id:currentUser.id}));
+   const r=await sb.from("products").insert(rows);if(r.error)throw r.error;
+ }
+}
+
+async function loadAll(){
+ setBusy(true);setSync("Supabase · sincronizando…");
+ const [lr,pr,cr,sr]=await Promise.all([
+   sb.from("leads").select("*").order("created_at",{ascending:false}),
+   sb.from("products").select("*").eq("active",true).order("name"),
+   sb.from("cash_movements").select("*").order("occurred_at",{ascending:false}),
+   sb.from("sales").select("*").order("sold_at",{ascending:false})
+ ]);
+ [lr,pr,cr,sr].forEach(r=>{if(r.error)throw r.error});
+ leads=lr.data||[];stock=pr.data||[];cash=cr.data||[];sales=sr.data||[];
+ renderAll();setBusy(false);setSync("Supabase · sincronizado");
+}
+
+async function startApp(){
+ document.getElementById("authGate").classList.add("hidden");
+ try{await seedIfEmpty();await loadAll()}catch(e){console.error(e);setSync("Erro de sincronização");alert("Falha ao carregar dados do Supabase: "+e.message)}
+}
+
+async function setStage(id,v){
+ const r=await sb.from("leads").update({stage:v}).eq("id",id);if(r.error)return alert(r.error.message);
+ const l=leads.find(x=>x.id===id);if(l)l.stage=v;renderAll();
+}
+window.setStage=setStage;
+
 function renderLeads(){
  const q=(document.getElementById("search")?.value||"").toLowerCase(),p=document.getElementById("priority")?.value||"",n=document.getElementById("neigh")?.value||"";
- const arr=leads.filter(l=>(!q||(l.name+" "+l.neighborhood+" "+l.segment+" "+l.email).toLowerCase().includes(q))&&(!p||l.priority===p)&&(!n||l.neighborhood===n));
- const el=document.getElementById("leadList"); if(!el)return;
- el.innerHTML=arr.map(l=>{
-   const e=emailForLead(l);
-   return '<div class="lead">'+
-   '<div class="leadtop"><div><h3>'+l.name+'</h3><div class="meta">'+l.segment+' · '+l.neighborhood+', Belo Horizonte</div></div><span class="badge '+l.priority+'">Prioridade '+l.priority+'</span></div>'+
-   '<div class="leadfacts"><div class="fact"><small>E-mail</small><b>'+esc(l.email)+'</b></div><div class="fact"><small>Setor</small><b>'+esc(l.segment)+'</b></div><div class="fact"><small>Localidade</small><b>'+esc(l.neighborhood)+'</b></div><div class="fact"><small>Ângulo OTB</small><b>'+esc(e.angle)+'</b></div></div>'+
-   (l.website||l.address?'<div class="meta" style="margin-top:9px">'+(l.website?'Site: <a href="'+l.website+'" target="_blank">'+esc(l.website)+'</a>':'')+(l.address?'<br>Endereço: '+esc(l.address):'')+'</div>':'')+
-   '<div class="emailbox"><div class="emailhead"><b>E-mail personalizado</b><button class="btn primary" onclick="copyEmail('+l.id+',this)">Copiar e-mail</button></div><div class="emailcopy"><b>Para:</b> '+esc(l.email)+'\n<b>Assunto:</b> '+esc(e.subject)+'\n\n'+esc(e.body)+'</div></div>'+
-   '<div class="actions"><select class="stage" onchange="setStage('+l.id+',this.value)">'+stages.map(s=>'<option '+(s===l.stage?'selected':'')+'>'+s+'</option>').join("")+'</select><button class="btn soft" onclick="editLead('+l.id+')">Editar</button><a class="btn soft" target="_blank" href="'+maps(l)+'">Maps</a>'+(l.website?'<a class="btn soft" target="_blank" href="'+l.website+'">Site</a>':'')+'<a class="btn soft" target="_blank" href="'+gmail(l)+'">Abrir no Gmail</a></div></div>';
- }).join("");
+ const arr=leads.filter(l=>(!q||(l.name+" "+(l.neighborhood||"")+" "+(l.segment||"")+" "+(l.email||"")).toLowerCase().includes(q))&&(!p||l.priority===p)&&(!n||l.neighborhood===n));
+ const el=document.getElementById("leadList");if(!el)return;
+ el.innerHTML=arr.map(l=>{const e=emailForLead(l);return '<div class="lead"><div class="leadtop"><div><h3>'+esc(l.name)+'</h3><div class="meta">'+esc(l.segment||"Sem setor")+' · '+esc(l.neighborhood||"Sem bairro")+', '+esc(l.city||"Belo Horizonte")+'</div></div><span class="badge '+l.priority+'">Prioridade '+l.priority+'</span></div><div class="leadfacts"><div class="fact"><small>E-mail</small><b>'+esc(l.email||"—")+'</b></div><div class="fact"><small>Setor</small><b>'+esc(l.segment||"—")+'</b></div><div class="fact"><small>Localidade</small><b>'+esc(l.neighborhood||"—")+'</b></div><div class="fact"><small>Ângulo OTB</small><b>'+esc(e.angle)+'</b></div></div>'+(l.website||l.address?'<div class="meta" style="margin-top:9px">'+(l.website?'Site: <a href="'+l.website+'" target="_blank">'+esc(l.website)+'</a>':'')+(l.address?'<br>Endereço: '+esc(l.address):'')+'</div>':'')+'<div class="emailbox"><div class="emailhead"><b>E-mail personalizado</b><button class="btn primary" onclick="copyEmail(\''+l.id+'\',this)">Copiar e-mail</button></div><div class="emailcopy"><b>Para:</b> '+esc(l.email||"")+'\n<b>Assunto:</b> '+esc(e.subject)+'\n\n'+esc(e.body)+'</div></div><div class="actions"><select class="stage" onchange="setStage(\''+l.id+'\',this.value)">'+stages.map(s=>'<option '+(s===l.stage?'selected':'')+'>'+s+'</option>').join("")+'</select><button class="btn soft" onclick="editLead(\''+l.id+'\')">Editar</button><a class="btn soft" target="_blank" href="'+maps(l)+'">Maps</a>'+(l.website?'<a class="btn soft" target="_blank" href="'+l.website+'">Site</a>':'')+'<a class="btn soft" target="_blank" href="'+gmail(l)+'">Abrir no Gmail</a></div></div>'}).join("");
 }
-window.setStage=(id,v)=>{leads.find(x=>x.id===id).stage=v;save()};
-window.openLeadForm=()=>openModal('<h2>Novo lead</h2><div class="formgrid"><div class="field full"><label>Negócio</label><input id="lfName"></div><div class="field"><label>Bairro</label><input id="lfNeigh"></div><div class="field"><label>Nicho</label><input id="lfSeg"></div><div class="field"><label>E-mail</label><input id="lfEmail" type="email"></div><div class="field"><label>Prioridade</label><select id="lfPri"><option>A</option><option>B</option><option>C</option></select></div><div class="field full"><label>Site</label><input id="lfSite"></div><div class="field full"><label>Endereço</label><input id="lfAddr"></div></div><div class="modalactions"><button class="btn soft" onclick="closeModal()">Cancelar</button><button class="btn primary" onclick="saveLead()">Salvar lead</button></div>');
-window.saveLead=()=>{const name=document.getElementById("lfName").value.trim();if(!name)return alert("Informe o nome do negócio.");leads.unshift({id:Date.now(),name,neighborhood:lfNeigh.value.trim(),segment:lfSeg.value.trim(),email:lfEmail.value.trim(),priority:lfPri.value,website:lfSite.value.trim(),address:lfAddr.value.trim(),stage:"Novo lead"});closeModal();save()};
-window.editLead=id=>{const l=leads.find(x=>x.id===id);openModal('<h2>Editar lead</h2><div class="formgrid"><div class="field full"><label>Negócio</label><input id="efName" value="'+esc(l.name)+'"></div><div class="field"><label>Bairro</label><input id="efNeigh" value="'+esc(l.neighborhood)+'"></div><div class="field"><label>Nicho</label><input id="efSeg" value="'+esc(l.segment)+'"></div><div class="field"><label>E-mail</label><input id="efEmail" value="'+esc(l.email)+'"></div><div class="field"><label>Prioridade</label><select id="efPri"><option '+(l.priority==="A"?"selected":"")+'>A</option><option '+(l.priority==="B"?"selected":"")+'>B</option><option '+(l.priority==="C"?"selected":"")+'>C</option></select></div><div class="field full"><label>Site</label><input id="efSite" value="'+esc(l.website||"")+'"></div><div class="field full"><label>Endereço</label><input id="efAddr" value="'+esc(l.address||"")+'"></div></div><div class="modalactions"><button class="btn danger" onclick="deleteLead('+id+')">Excluir</button><button class="btn primary" onclick="updateLead('+id+')">Salvar</button></div>')};
-function esc(s){return String(s||"").replaceAll("&","&amp;").replaceAll('"',"&quot;").replaceAll("<","&lt;")}
-window.updateLead=id=>{const l=leads.find(x=>x.id===id);Object.assign(l,{name:efName.value.trim(),neighborhood:efNeigh.value.trim(),segment:efSeg.value.trim(),email:efEmail.value.trim(),priority:efPri.value,website:efSite.value.trim(),address:efAddr.value.trim()});closeModal();save()};
-window.deleteLead=id=>{if(confirm("Excluir este lead?")){leads=leads.filter(x=>x.id!==id);closeModal();save()}};
-function renderStock(){const el=document.getElementById("stockList");if(!el)return;el.innerHTML=stock.map(x=>'<div class="stockrow"><b>'+x.name+'</b><span>'+x.qty+' un.</span><span>mín. '+x.min+'</span><span class="badge '+(x.qty<x.min?"C":x.qty<=x.min+2?"B":"A")+'">'+(x.qty<x.min?"Crítico":x.qty<=x.min+2?"Atenção":"OK")+'</span><div class="qtyBtns"><button onclick="qty('+x.id+',-1)">−</button><button onclick="qty('+x.id+',1)">+</button></div></div>').join("")}
-window.qty=(id,d)=>{const x=stock.find(s=>s.id===id);x.qty=Math.max(0,x.qty+d);save()};
-window.openStockForm=()=>openModal('<h2>Novo produto</h2><div class="formgrid"><div class="field full"><label>Produto</label><input id="sfName"></div><div class="field"><label>Quantidade</label><input id="sfQty" type="number" min="0" value="0"></div><div class="field"><label>Mínimo</label><input id="sfMin" type="number" min="0" value="5"></div></div><div class="modalactions"><button class="btn primary" onclick="saveStock()">Adicionar</button></div>');
-window.saveStock=()=>{if(!sfName.value.trim())return alert("Informe o produto.");stock.push({id:Date.now(),name:sfName.value.trim(),qty:+sfQty.value||0,min:+sfMin.value||0});closeModal();save()};
-window.openSaleForm=()=>openModal('<h2>Registrar venda</h2><div class="formgrid"><div class="field full"><label>Cliente</label><input id="saleClient"></div><div class="field"><label>Produto</label><select id="saleProd">'+stock.map(x=>'<option value="'+x.id+'">'+x.name+'</option>').join("")+'</select></div><div class="field"><label>Quantidade</label><input id="saleQty" type="number" min="1" value="1"></div><div class="field"><label>Total</label><input id="saleValue" type="number" step="0.01" min="0"></div><div class="field"><label>Canal</label><select id="saleChannel"><option>WhatsApp</option><option>Instagram</option><option>Direto</option><option>Outro</option></select></div></div><div class="modalactions"><button class="btn primary" onclick="saveSale()">Registrar</button></div>');
-window.saveSale=()=>{const val=+saleValue.value||0,q=+saleQty.value||1,p=stock.find(x=>x.id==saleProd.value);if(p)p.qty=Math.max(0,p.qty-q);cash.unshift({id:Date.now(),date:new Date().toLocaleDateString("pt-BR"),desc:"Venda · "+(saleClient.value.trim()||"Cliente")+" · "+(p?.name||""),type:"Entrada",value:val,channel:saleChannel.value});closeModal();save()};
-window.openCashForm=()=>openModal('<h2>Entrada / saída</h2><div class="formgrid"><div class="field full"><label>Descrição</label><input id="cfDesc"></div><div class="field"><label>Tipo</label><select id="cfType"><option>Entrada</option><option>Saída</option></select></div><div class="field"><label>Valor</label><input id="cfVal" type="number" step="0.01" min="0"></div></div><div class="modalactions"><button class="btn primary" onclick="saveCash()">Salvar</button></div>');
-window.saveCash=()=>{const v=+cfVal.value||0;if(!cfDesc.value.trim()||!v)return alert("Preencha descrição e valor.");cash.unshift({id:Date.now(),date:new Date().toLocaleDateString("pt-BR"),desc:cfDesc.value.trim(),type:cfType.value,value:v});closeModal();save()};
-function renderCash(){const ent=cash.filter(x=>x.type==="Entrada").reduce((a,b)=>a+b.value,0),out=cash.filter(x=>x.type==="Saída").reduce((a,b)=>a+b.value,0);document.getElementById("revTotal").textContent=brl(cash.filter(x=>x.desc.startsWith("Venda")).reduce((a,b)=>a+b.value,0));document.getElementById("cashIn").textContent=brl(ent);document.getElementById("cashOut").textContent=brl(out);document.getElementById("cashBalance").textContent=brl(ent-out);document.getElementById("cashList").innerHTML=cash.length?cash.map(x=>'<div class="cashrow"><b>'+x.desc+'</b><span>'+x.date+'</span><span>'+x.type+'</span><span>'+(x.type==="Saída"?"− ":"+ ")+brl(x.value)+'</span><button class="btn danger" onclick="delCash('+x.id+')">Excluir</button></div>').join(""):'<div class="notice">Nenhuma movimentação registrada ainda.</div>'}
-window.delCash=id=>{cash=cash.filter(x=>x.id!==id);save()};
-function metrics(){document.getElementById("mLeads").textContent=leads.length;document.getElementById("mContact").textContent=leads.filter(l=>["Contato preparado","E-mail enviado","Respondeu","Oportunidade"].includes(l.stage)).length;document.getElementById("mClients").textContent=leads.filter(l=>l.stage==="Cliente").length}
-function renderFilters(){const n=document.getElementById("neigh");if(!n)return;const cur=n.value,ns=[...new Set(leads.map(l=>l.neighborhood).filter(Boolean))].sort();n.innerHTML='<option value="">Todos os bairros</option>'+ns.map(x=>'<option>'+x+'</option>').join("");n.value=cur}
+
+function openLeadForm(){openModal('<h2>Novo lead</h2><div class="formgrid"><div class="field full"><label>Negócio</label><input id="lfName"></div><div class="field"><label>Bairro</label><input id="lfNeigh"></div><div class="field"><label>Nicho</label><input id="lfSeg"></div><div class="field"><label>E-mail</label><input id="lfEmail" type="email"></div><div class="field"><label>Prioridade</label><select id="lfPri"><option>A</option><option selected>B</option><option>C</option></select></div><div class="field full"><label>Site</label><input id="lfSite"></div><div class="field full"><label>Endereço</label><input id="lfAddr"></div></div><div class="modalactions"><button class="btn soft" onclick="closeModal()">Cancelar</button><button class="btn primary" onclick="saveLead()">Salvar lead</button></div>')}
+window.openLeadForm=openLeadForm;
+async function saveLead(){
+ const name=lfName.value.trim();if(!name)return alert("Informe o nome do negócio.");
+ const row={owner_id:currentUser.id,name,neighborhood:lfNeigh.value.trim(),city:"Belo Horizonte",state:"MG",segment:lfSeg.value.trim(),email:lfEmail.value.trim(),priority:lfPri.value,website:lfSite.value.trim()||null,address:lfAddr.value.trim()||null,stage:"Novo lead",source:"Cadastro manual"};
+ const r=await sb.from("leads").insert(row).select().single();if(r.error)return alert(r.error.message);leads.unshift(r.data);closeModal();renderAll()
+}
+window.saveLead=saveLead;
+
+function editLead(id){const l=leads.find(x=>x.id===id);openModal('<h2>Editar lead</h2><div class="formgrid"><div class="field full"><label>Negócio</label><input id="efName" value="'+esc(l.name)+'"></div><div class="field"><label>Bairro</label><input id="efNeigh" value="'+esc(l.neighborhood||"")+'"></div><div class="field"><label>Nicho</label><input id="efSeg" value="'+esc(l.segment||"")+'"></div><div class="field"><label>E-mail</label><input id="efEmail" value="'+esc(l.email||"")+'"></div><div class="field"><label>Prioridade</label><select id="efPri"><option '+(l.priority==="A"?"selected":"")+'>A</option><option '+(l.priority==="B"?"selected":"")+'>B</option><option '+(l.priority==="C"?"selected":"")+'>C</option></select></div><div class="field full"><label>Site</label><input id="efSite" value="'+esc(l.website||"")+'"></div><div class="field full"><label>Endereço</label><input id="efAddr" value="'+esc(l.address||"")+'"></div></div><div class="modalactions"><button class="btn danger" onclick="deleteLead(\''+id+'\')">Excluir</button><button class="btn primary" onclick="updateLead(\''+id+'\')">Salvar</button></div>')}
+window.editLead=editLead;
+async function updateLead(id){
+ const patch={name:efName.value.trim(),neighborhood:efNeigh.value.trim(),segment:efSeg.value.trim(),email:efEmail.value.trim(),priority:efPri.value,website:efSite.value.trim()||null,address:efAddr.value.trim()||null};
+ const r=await sb.from("leads").update(patch).eq("id",id);if(r.error)return alert(r.error.message);Object.assign(leads.find(x=>x.id===id),patch);closeModal();renderAll()
+}
+window.updateLead=updateLead;
+async function deleteLead(id){if(!confirm("Excluir este lead?"))return;const r=await sb.from("leads").delete().eq("id",id);if(r.error)return alert(r.error.message);leads=leads.filter(x=>x.id!==id);closeModal();renderAll()}
+window.deleteLead=deleteLead;
+
+function renderStock(){const el=document.getElementById("stockList");if(!el)return;el.innerHTML=stock.map(x=>'<div class="stockrow"><b>'+esc(x.name)+'</b><span>'+x.stock_qty+' un.</span><span>mín. '+x.min_stock+'</span><span class="badge '+(x.stock_qty<x.min_stock?"C":x.stock_qty<=x.min_stock+2?"B":"A")+'">'+(x.stock_qty<x.min_stock?"Crítico":x.stock_qty<=x.min_stock+2?"Atenção":"OK")+'</span><div class="qtyBtns"><button onclick="qty(\''+x.id+'\',-1)">−</button><button onclick="qty(\''+x.id+'\',1)">+</button></div></div>').join("")}
+async function qty(id,d){const x=stock.find(s=>s.id===id),next=Math.max(0,x.stock_qty+d);const u=await sb.from("products").update({stock_qty:next}).eq("id",id);if(u.error)return alert(u.error.message);await sb.from("stock_movements").insert({owner_id:currentUser.id,product_id:id,movement_type:d>0?"entrada":"saida",quantity:Math.abs(d),reason:"Ajuste manual"});x.stock_qty=next;renderAll()}
+window.qty=qty;
+
+function openStockForm(){openModal('<h2>Novo produto</h2><div class="formgrid"><div class="field full"><label>Produto</label><input id="sfName"></div><div class="field"><label>Quantidade</label><input id="sfQty" type="number" min="0" value="0"></div><div class="field"><label>Mínimo</label><input id="sfMin" type="number" min="0" value="5"></div><div class="field"><label>Preço</label><input id="sfPrice" type="number" step="0.01" min="0" value="0"></div><div class="field"><label>Categoria</label><input id="sfCat"></div></div><div class="modalactions"><button class="btn primary" onclick="saveStock()">Adicionar</button></div>')}
+window.openStockForm=openStockForm;
+async function saveStock(){if(!sfName.value.trim())return alert("Informe o produto.");const row={owner_id:currentUser.id,name:sfName.value.trim(),category:sfCat.value.trim()||null,unit_price:+sfPrice.value||0,stock_qty:+sfQty.value||0,min_stock:+sfMin.value||0};const r=await sb.from("products").insert(row).select().single();if(r.error)return alert(r.error.message);stock.push(r.data);closeModal();renderAll()}
+window.saveStock=saveStock;
+
+function openSaleForm(){openModal('<h2>Registrar venda</h2><div class="formgrid"><div class="field full"><label>Cliente</label><input id="saleClient"></div><div class="field"><label>Produto</label><select id="saleProd">'+stock.map(x=>'<option value="'+x.id+'">'+esc(x.name)+'</option>').join("")+'</select></div><div class="field"><label>Quantidade</label><input id="saleQty" type="number" min="1" value="1"></div><div class="field"><label>Total</label><input id="saleValue" type="number" step="0.01" min="0"></div><div class="field"><label>Canal</label><select id="saleChannel"><option>WhatsApp</option><option>Instagram</option><option>Direto</option><option>Outro</option></select></div></div><div class="modalactions"><button class="btn primary" onclick="saveSale()">Registrar</button></div>')}
+window.openSaleForm=openSaleForm;
+async function saveSale(){
+ const val=+saleValue.value||0,q=+saleQty.value||1,p=stock.find(x=>x.id===saleProd.value);if(!p)return alert("Produto inválido.");
+ const sr=await sb.from("sales").insert({owner_id:currentUser.id,customer_name:saleClient.value.trim()||"Cliente",channel:saleChannel.value,total:val,payment_status:"pago"}).select().single();if(sr.error)return alert(sr.error.message);
+ await sb.from("sale_items").insert({sale_id:sr.data.id,product_id:p.id,product_name:p.name,quantity:q,unit_price:q?val/q:val});
+ const next=Math.max(0,p.stock_qty-q);await sb.from("products").update({stock_qty:next}).eq("id",p.id);await sb.from("stock_movements").insert({owner_id:currentUser.id,product_id:p.id,movement_type:"saida",quantity:q,reason:"Venda"});
+ const cr=await sb.from("cash_movements").insert({owner_id:currentUser.id,movement_type:"entrada",category:"Venda",description:"Venda · "+(saleClient.value.trim()||"Cliente")+" · "+p.name,amount:val,related_sale_id:sr.data.id}).select().single();
+ if(cr.error)return alert(cr.error.message);p.stock_qty=next;sales.unshift(sr.data);cash.unshift(cr.data);closeModal();renderAll()
+}
+window.saveSale=saveSale;
+
+function openCashForm(){openModal('<h2>Entrada / saída</h2><div class="formgrid"><div class="field full"><label>Descrição</label><input id="cfDesc"></div><div class="field"><label>Tipo</label><select id="cfType"><option value="entrada">Entrada</option><option value="saida">Saída</option></select></div><div class="field"><label>Valor</label><input id="cfVal" type="number" step="0.01" min="0"></div></div><div class="modalactions"><button class="btn primary" onclick="saveCash()">Salvar</button></div>')}
+window.openCashForm=openCashForm;
+async function saveCash(){const v=+cfVal.value||0;if(!cfDesc.value.trim()||!v)return alert("Preencha descrição e valor.");const row={owner_id:currentUser.id,movement_type:cfType.value,description:cfDesc.value.trim(),amount:v};const r=await sb.from("cash_movements").insert(row).select().single();if(r.error)return alert(r.error.message);cash.unshift(r.data);closeModal();renderAll()}
+window.saveCash=saveCash;
+
+function renderCash(){
+ const ent=cash.filter(x=>x.movement_type==="entrada").reduce((a,b)=>a+Number(b.amount),0),out=cash.filter(x=>x.movement_type==="saida").reduce((a,b)=>a+Number(b.amount),0);
+ document.getElementById("revTotal").textContent=brl(sales.reduce((a,b)=>a+Number(b.total),0));
+ document.getElementById("cashIn").textContent=brl(ent);document.getElementById("cashOut").textContent=brl(out);document.getElementById("cashBalance").textContent=brl(ent-out);
+ document.getElementById("cashList").innerHTML=cash.length?cash.map(x=>'<div class="cashrow"><b>'+esc(x.description)+'</b><span>'+new Date(x.occurred_at).toLocaleDateString("pt-BR")+'</span><span>'+(x.movement_type==="entrada"?"Entrada":"Saída")+'</span><span>'+(x.movement_type==="saida"?"− ":"+ ")+brl(x.amount)+'</span><button class="btn danger" onclick="delCash(\''+x.id+'\')">Excluir</button></div>').join(""):'<div class="notice">Nenhuma movimentação registrada ainda.</div>'
+}
+async function delCash(id){const r=await sb.from("cash_movements").delete().eq("id",id);if(r.error)return alert(r.error.message);cash=cash.filter(x=>x.id!==id);renderAll()}
+window.delCash=delCash;
+
+function metrics(){
+ document.getElementById("mLeads").textContent=leads.length;
+ document.getElementById("mContact").textContent=leads.filter(l=>["Contato preparado","E-mail enviado","Respondeu","Oportunidade"].includes(l.stage)).length;
+ document.getElementById("mClients").textContent=leads.filter(l=>l.stage==="Cliente").length;
+ const crit=stock.filter(x=>x.stock_qty<x.min_stock).length;
+ const cards=document.querySelectorAll("#dash .value");if(cards[3])cards[3].textContent=crit;
+}
+function renderFilters(){const n=document.getElementById("neigh");if(!n)return;const cur=n.value,ns=[...new Set(leads.map(l=>l.neighborhood).filter(Boolean))].sort();n.innerHTML='<option value="">Todos os bairros</option>'+ns.map(x=>'<option>'+esc(x)+'</option>').join("");n.value=cur}
 function renderAll(){renderFilters();renderLeads();renderStock();renderCash();metrics()}
+
 document.querySelectorAll("[data-page]").forEach(b=>b.onclick=()=>{const id=b.dataset.page;document.querySelectorAll("[data-page]").forEach(x=>x.classList.toggle("active",x.dataset.page===id));document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id===id));window.scrollTo({top:0,behavior:"smooth"})});
 ["search","priority","neigh"].forEach(id=>document.getElementById(id)?.addEventListener("input",renderLeads));
-renderAll();
+
+(async()=>{
+ const {data}=await sb.auth.getSession();
+ if(data.session){currentUser=data.session.user;await startApp()}
+ else document.getElementById("authGate").classList.remove("hidden");
+ sb.auth.onAuthStateChange(async(event,session)=>{if(event==="SIGNED_IN"&&session&&!currentUser){currentUser=session.user;await startApp()}});
+})();
 </script></body></html>
